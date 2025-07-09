@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>신의 눈</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;700&family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Three.js 3D 배경 -->
+  <div id="three-canvas"></div>
+
+  <!-- god.png 이미지 추가 -->
+  <img id="god-image" src="assets/god.png" alt="God Image">
+
+  <!-- 메인 뷰포트 -->
+  <div id="main-viewport">
+    <div class="main-content">
+      <!-- GPT 응답 출력 영역 -->
+      <div class="chat-log" id="chat-log"></div>
+
+      <!-- 질문 입력창 -->
+      <div class="input-box">
+        <input type="text" id="user-input" placeholder="신에게 물어보세요...">
+        <button id="send-button">묻기</button>
+      </div>
+    </div>
+    <div class="scroll-indicator">
+      <span>'타로타로스' 알아보기</span>
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 5V19M12 19L19 12M12 19L5 12" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- 설명 섹션 -->
+  <section id="description-section">
+    <div class="description-content">
+      <h2>GOD DOES NOT BLINK – VR DILEMMA EXPERIENCE</h2>
+      <h3>3가지 딜레마 상황 속, 신비로운 존재의 안내를 따라<br>당신은 선택을 내리게 됩니다. 그 결정은 당신의 내면을 반영하고,<br>마침내 하나의 성격 유형으로 귀결됩니다.</h3>
+      <p><strong>『GOD DOES NOT BLINK』</strong>은<br>당신을 깊은 선택의 공간으로 초대하는 VR 체험형 콘텐츠입니다.</p>
+      <p>현실에선 마주하기 힘든 세 가지 딜레마.<br>그 안에서 당신은 '신'의 시선으로 안내를 받고, 선택을 내려야 합니다.</p>
+      <p>각 결정의 결과는 시각화된 상황으로 돌아오며,<br>마지막엔 당신의 선택 경향을 바탕으로 한 ‘성격 유형’ 카드가 부여됩니다.</p>
+      <p class="final-quote">“어떤 결정을 내려도, 그 안에 당신이 있다.”</p>
+      <ul>
+        <li>10분간의 몰입형 체험</li>
+        <li>인터랙티브 심리 분석</li>
+        <li>철학적 몰입과 게임적 선택의 조화</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 퍼즐 섹션 -->
+  <section id="puzzle-section">
+    <h2>신의 시험</h2>
+    <p>신의 조각을 맞춰 그의 형상을 완성하고, 축복을 받으세요.</p>
+    <div id="puzzle-selection">
+      <button class="puzzle-select-btn" data-puzzle="1">첫 번째 시험</button>
+      <button class="puzzle-select-btn" data-puzzle="2">두 번째 시험</button>
+      <button class="puzzle-select-btn" data-puzzle="3">세 번째 시험</button>
+    </div>
+    <div id="puzzle-container" style="display: none;">
+      <div id="puzzle-pieces"></div>
+      <div id="puzzle-grid"></div>
+    </div>
+    <div id="puzzle-message" class="hidden">
+      <p>신의 가호가 당신과 함께할 것입니다.</p>
+    </div>
+  </section>
+
+  <!-- 신의 축복: 마우스 아우라 -->
+  <div id="blessing-aura"></div>
+
+  <!-- 완성된 카드 전시 오버레이 -->
+  <div id="completed-card-display">
+    <img src="" alt="Completed Puzzle">
+  </div>
+
+  <!-- 수집된 카드 컨테이너 -->
+  <div id="collected-cards-container"></div>
+
+  <!-- 별자리 보상 메시지 -->
+  <div id="constellation-reward"></div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="script.js"></script>
+
+</body>
+</html>

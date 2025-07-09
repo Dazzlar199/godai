@@ -1,0 +1,589 @@
+/* 전체 화면 기본 스타일 */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: #000005;
+  color: white;
+  font-family: 'Noto Sans KR', sans-serif;
+  margin: 0;
+  overflow-x: hidden; /* 가로 스크롤 방지 */
+}
+
+#god-image {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  width: 150px;
+  height: auto;
+  z-index: 10;
+  opacity: 0.8;
+  transition: opacity 0.3s ease;
+}
+
+#god-image:hover {
+  opacity: 1;
+}
+
+#galaxy-image {
+  position: absolute;
+  top: 5%; /* 위에서 5% 아래로 */
+  right: 5%; /* 오른쪽에서 5% 왼쪽으로 */
+  width: 25%; /* 화면 너비의 25%로 축소 */
+  height: auto;
+  opacity: 0.3; /* 흐리게 */
+  z-index: -1; /* 배경으로 설정 */
+  pointer-events: none; /* 이미지 클릭 방지 */
+}
+
+#three-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1; /* 배경으로 설정 */
+}
+
+#main-viewport {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  position: relative;
+}
+
+.main-content {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding-bottom: 50px;
+  padding-top: 20vh;
+}
+
+/* GPT 채팅 입력 영역 */
+.input-box {
+  width: 70%;
+  max-width: 800px;
+  display: flex;
+  gap: 10px;
+  z-index: 20;
+  background: rgba(0, 0, 0, 0.5);
+  padding: 15px;
+  border-radius: 10px;
+  border: 1px solid rgba(0, 255, 255, 0.3);
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
+  margin-bottom: 30px;
+}
+
+#user-input {
+  flex: 1;
+  padding: 15px;
+  font-size: 16px;
+  border: 1px solid rgba(0, 255, 255, 0.5);
+  border-radius: 5px;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+
+#user-input::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+#send-button {
+  padding: 15px 25px;
+  font-size: 16px;
+  background: linear-gradient(45deg, #00ffff, #ff00ff);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-family: 'Orbitron', sans-serif;
+  transition: all 0.3s ease;
+}
+
+#send-button:hover {
+  box-shadow: 0 0 20px #ff00ff;
+  transform: scale(1.05);
+}
+
+/* GPT 응답 로그 영역 */
+#chat-log {
+  width: 80%;
+  max-width: 500px;
+  height: 45%;
+  overflow-y: auto;
+  color: white;
+  font-size: 16px;
+  z-index: 15;
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 15px;
+  padding: 20px;
+  margin-bottom: 20px;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+#chat-log::-webkit-scrollbar {
+  display: none;
+}
+
+.chat-message {
+  padding: 15px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  backdrop-filter: blur(5px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  animation: fadeIn 0.5s ease-out forwards, messageGlow 1.5s ease-out forwards; /* glow 추가 */
+  opacity: 0;
+  line-height: 1.6;
+  text-align: left;
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes messageGlow {
+  0% {
+    box-shadow: 0 0 5px rgba(0, 255, 255, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.8), 0 0 30px rgba(255, 0, 255, 0.5);
+  }
+  100% {
+    box-shadow: 0 0 5px rgba(0, 255, 255, 0.3);
+  }
+}
+
+/* Fade out 애니메이션 */
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-20px);
+    height: 0;
+    padding: 0;
+    margin: 0;
+  }
+}
+
+.chat-message.fade-out {
+  animation: fadeOut 1s ease-out forwards; /* 1초 동안 페이드 아웃 */
+}
+
+.chat-message.gpt {
+  border-left: 3px solid #00ffff;
+  font-family: 'Georgia', serif;
+  font-style: italic;
+}
+
+.chat-message.user {
+  border-left: 3px solid #ff00ff;
+}
+
+/* 스크롤 안내 */
+.scroll-indicator {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  color: rgba(255, 255, 255, 0.7);
+  font-family: 'Orbitron', sans-serif;
+  animation: bounce 2s infinite;
+  cursor: pointer;
+}
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translate(-50%, 0);
+  }
+  40% {
+    transform: translate(-50%, -10px);
+  }
+  60% {
+    transform: translate(-50%, -5px);
+  }
+}
+
+@keyframes floatAnimation {
+  0% {
+    transform: translate(0, 0) rotate(0deg) scale(1);
+  }
+  25% {
+    transform: translate(20px, -15px) rotate(5deg) scale(1.02);
+  }
+  50% {
+    transform: translate(-10px, 25px) rotate(-5deg) scale(0.98);
+  }
+  75% {
+    transform: translate(-25px, -20px) rotate(3deg) scale(1.01);
+  }
+  100% {
+    transform: translate(0, 0) rotate(0deg) scale(1);
+  }
+}
+
+.god-image-animated {
+  animation: floatAnimation 10s ease-in-out infinite; /* 애니메이션 시간 증가 */
+}
+
+/* 설명 섹션 */
+#description-section {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 50px;
+  background: linear-gradient(to bottom, #000005, #0d001a);
+  position: relative;
+  z-index: 10;
+}
+
+.description-content {
+  max-width: 800px;
+  text-align: center;
+  opacity: 0;
+  transform: translateY(50px);
+  transition: opacity 1s ease-out, transform 1s ease-out;
+}
+
+.description-content.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.description-content h2 {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 3em;
+  color: #00ffff;
+  margin-bottom: 10px;
+}
+
+.description-content h3 {
+  font-size: 1.5em;
+  color: #FFD700;
+  margin-bottom: 30px;
+  font-weight: 400;
+}
+
+.description-content p {
+  font-size: 1.1em;
+  line-height: 1.8;
+  margin-bottom: 20px;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.description-content .final-quote {
+  font-size: 1.3em;
+  font-style: italic;
+  color: #00ffff;
+  margin-top: 40px;
+  font-family: 'Georgia', serif;
+}
+
+.description-content ul {
+  list-style: none; /* 기본 리스트 스타일 제거 */
+  padding: 0;
+  margin-top: 30px;
+  max-width: 600px; /* 리스트의 최대 너비 설정 */
+  margin-left: auto; /* 가운데 정렬 */
+  margin-right: auto; /* 가운데 정렬 */
+}
+
+.description-content li {
+  font-size: 1.1em;
+  line-height: 1.8;
+  margin-bottom: 15px; /* 간격 좀 더 주기 */
+  color: #fff; /* 텍스트 색상 흰색으로 유지 */
+  position: relative;
+  padding: 10px 15px; /* 패딩 추가 */
+  padding-left: 40px; /* 아이콘 공간 확보 */
+  background: rgba(255, 215, 0, 0.1); /* 노란색 계열 배경 */
+  border: 1px solid rgba(255, 215, 0, 0.5); /* 테두리 추가 */
+  border-radius: 8px; /* 모서리 둥글게 */
+  font-family: 'Orbitron', sans-serif; /* 레트로 폰트 */
+  text-align: center; /* 텍스트 가운데 정렬 */
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.3); /* 은은한 그림자 */
+  transition: all 0.3s ease; /* 호버 효과를 위한 트랜지션 */
+}
+
+.description-content li:hover {
+  background: rgba(255, 215, 0, 0.2);
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
+  transform: translateY(-3px); /* 살짝 위로 뜨는 효과 */
+}
+
+.description-content li::before {
+  content: '✨'; /* 이모지 아이콘 */
+  position: absolute;
+  left: 10px; /* 아이콘 위치 조정 */
+  top: 50%;
+  transform: translateY(-50%);
+  color: #FFD700; /* 아이콘 색상 */
+  font-size: 1.2em;
+  line-height: 1; /* 라인 높이 조정 */
+}
+
+.description-content h2 {
+  /* 기존 스타일 유지 */
+  font-family: 'Orbitron', sans-serif;
+  font-size: 3em;
+  color: #00ffff;
+  margin-bottom: 10px;
+  text-shadow: 0 0 15px rgba(0, 255, 255, 0.8), 0 0 25px rgba(0, 255, 255, 0.6); /* 더 강한 그림자 */
+  animation: neonGlow 1.5s ease-in-out infinite alternate; /* 네온 효과 애니메이션 */
+}
+
+@keyframes neonGlow {
+  from {
+    text-shadow: 0 0 10px rgba(0, 255, 255, 0.7), 0 0 20px rgba(0, 255, 255, 0.5);
+  }
+  to {
+    text-shadow: 0 0 20px rgba(0, 255, 255, 1), 0 0 30px rgba(0, 255, 255, 0.8), 0 0 40px rgba(0, 255, 255, 0.6);
+  }
+}
+
+/* 퍼즐 섹션 스타일 */
+#puzzle-section {
+  padding: 100px 50px;
+  text-align: center;
+  background: #0a0014;
+  position: relative;
+  z-index: 10;
+  opacity: 0; /* 초기 투명 */
+  transform: translateY(50px); /* 초기 아래로 이동 */
+  transition: opacity 1s ease-out, transform 1s ease-out; /* 애니메이션 효과 */
+}
+
+#puzzle-section.visible {
+  opacity: 1; /* 나타날 때 투명도 1 */
+  transform: translateY(0); /* 나타날 때 원래 위치로 */
+}
+
+#puzzle-section h2 {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 2.5em;
+  color: #ffc107;
+  margin-bottom: 20px;
+}
+
+#puzzle-selection button {
+  background: linear-gradient(45deg, #ffc107, #ff8a00);
+  color: white;
+  border: none;
+  padding: 15px 30px;
+  margin: 10px;
+  cursor: pointer;
+  font-size: 1.2em;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+#puzzle-selection button:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 25px #ffc107;
+}
+
+#puzzle-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 40px;
+  margin-top: 40px;
+}
+
+#puzzle-pieces {
+  display: grid;
+  grid-template-columns: repeat(2, 100px);
+  gap: 10px;
+}
+
+#puzzle-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 100px);
+  grid-template-rows: repeat(3, 100px);
+  gap: 5px;
+  border: 2px dashed #ffc107;
+  padding: 5px;
+}
+
+.puzzle-piece {
+  width: 100px;
+  height: 100px;
+  background-size: 200px 300px;
+  border: 1px solid #fff;
+  cursor: grab;
+}
+
+.grid-cell {
+  width: 100px;
+  height: 100px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid #555;
+}
+
+#puzzle-message {
+  margin-top: 30px;
+  font-size: 1.8em;
+  color: #ffc107;
+  font-family: 'Georgia', serif;
+  font-style: italic;
+  opacity: 0;
+  transition: opacity 1s ease-in-out;
+}
+
+#puzzle-message.visible {
+  opacity: 1;
+}
+
+.hidden {
+    display: none;
+}
+
+/* 신의 축복: 마우스 아우라 스타일 */
+#blessing-aura {
+  position: fixed;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 193, 7, 0.8) 0%, rgba(255, 193, 7, 0) 70%);
+  box-shadow: 0 0 20px 5px rgba(255, 193, 7, 0.5);
+  pointer-events: none; /* 마우스 클릭 방해 안 함 */
+  transform: translate(-50%, -50%);
+  z-index: 9999;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+#blessing-aura.visible {
+  opacity: 1;
+}
+
+/* 완성된 카드 전시 스타일 */
+#completed-card-display {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s ease-in-out;
+}
+
+#completed-card-display.visible {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+#completed-card-display img {
+  max-width: 300px;
+  border: 3px solid #ffc107;
+  box-shadow: 0 0 30px 10px rgba(255, 193, 7, 0.7);
+  animation: glow 2s infinite alternate;
+}
+
+@keyframes glow {
+  from {
+    box-shadow: 0 0 30px 10px rgba(255, 193, 7, 0.7);
+  }
+  to {
+    box-shadow: 0 0 45px 15px rgba(255, 165, 0, 0.9);
+  }
+}
+
+/* 수집된 카드 컨테이너 */
+#collected-cards-container {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  display: flex;
+  gap: 10px;
+  z-index: 1000;
+}
+
+.collected-card-icon {
+  width: 50px;
+  height: 75px;
+  border: 2px solid #ffc107;
+  border-radius: 5px;
+  opacity: 0.8;
+  transition: all 0.3s ease;
+}
+
+.collected-card-icon:hover {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+/* 별자리 보상 메시지 스타일 */
+#constellation-reward {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 30px;
+  background: rgba(10, 0, 30, 0.85);
+  border: 2px solid #ffc107;
+  border-radius: 15px;
+  box-shadow: 0 0 30px rgba(255, 193, 7, 0.6);
+  color: #fff;
+  font-family: 'Georgia', serif;
+  font-size: 1.5em;
+  text-align: center;
+  z-index: 10001;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 1s ease-in-out;
+}
+
+#constellation-reward.visible {
+  opacity: 1;
+}
+
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .main-content {
+    padding-top: 15vh;
+  }
+  .input-box {
+    width: 90%;
+  }
+  #chat-log {
+    width: 90%;
+    height: 50%;
+  }
+  .description-content h2 {
+    font-size: 2.5em;
+  }
+  .description-content h3 {
+    font-size: 1.2em;
+  }
+  .description-content p {
+    font-size: 1em;
+  }
+}
