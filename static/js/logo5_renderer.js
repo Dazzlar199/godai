@@ -85,7 +85,7 @@ class Logo5Renderer {
             const loader = new THREE.GLTFLoader();
             
             // logo5 모델 로드
-            const gltf = await loader.loadAsync('/static/assets/models/logo5.glb');
+            const gltf = await loader.loadAsync('./static/assets/models/logo5.glb');
             
             this.model = gltf.scene;
             

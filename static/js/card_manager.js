@@ -32,10 +32,10 @@ export function initCardSelection(onCardSelected, audioManager) {
     cardItem.dataset.cardId = i;
 
     const cardImage = document.createElement('img');
-    cardImage.src = `/static/assets/card/${i}.png`;
+    cardImage.src = `./static/assets/card/${i}.png`;
     cardImage.alt = `카드 ${i}`;
     cardImage.onerror = () => {
-      cardImage.src = '/static/assets/card/back.png'; // 대체 이미지
+      cardImage.src = './static/assets/card/back.png'; // 대체 이미지
     };
     
     cardItem.appendChild(cardImage);

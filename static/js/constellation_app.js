@@ -638,7 +638,7 @@ function setupFinalPhase() {
           cardData[key].name === combinationInfo.card.name
         );
         if (cardNumber) {
-          finalCardImage.src = `/static/assets/card/${cardNumber}.png`;
+          finalCardImage.src = `./static/assets/card/${cardNumber}.png`;
           console.log('[Constellation] 카드 이미지 설정 완료:', combinationInfo.card.name);
         }
       }

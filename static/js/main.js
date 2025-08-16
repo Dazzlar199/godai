@@ -9,15 +9,15 @@ let journeyManager;
 function initializeApp() {
     console.log('[Init] App initialization started.');
 
-    // Three.js 초기화
-    initThreeApp();
+    // Three.js 앱 함수를 전역으로 노출
+    window.initThreeApp = initThreeApp;
+    window.startWarpEffect = startWarpEffect;
 
     // 여정 관리자 시작
     journeyManager = new JourneyManager();
 
     // 다른 모듈에서 접근할 수 있도록 전역 스코프에 할당
     window.journeyManager = journeyManager;
-    window.startWarpEffect = startWarpEffect;
 
     console.log('[Init] App initialized successfully.');
 }

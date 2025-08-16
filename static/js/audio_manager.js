@@ -1,15 +1,17 @@
 export class AudioManager {
     constructor() {
-        this.sounds = {
-            'background': new Audio('/static/background_music.mp3'),
-            'click': new Audio('/static/assets/click_sound.mp3'),
-            'message': new Audio('/static/assets/message_sound.mp3'),
-            'revelation': new Audio('/static/assets/success.mp3'),
-            'phase1_voice': new Audio('/static/assets/phase1_voice.mp3'),
-            'mediapipe_voice': new Audio('/static/assets/mediapipe_voice.mp3'),
-            'finish': new Audio('/static/assets/finish_sound.mp3'),
-            'star_finish': new Audio('/static/assets/star_finish.mp3')
+        const audioFiles = {
+            'background': new Audio('./static/background_music.mp3'),
+            'click': new Audio('./static/assets/click_sound.mp3'),
+            'message': new Audio('./static/assets/message_sound.mp3'),
+            'revelation': new Audio('./static/assets/success.mp3'),
+            'phase1_voice': new Audio('./static/assets/phase1_voice.mp3'),
+            'mediapipe_voice': new Audio('./static/assets/mediapipe_voice.mp3'),
+            'finish': new Audio('./static/assets/finish_sound.mp3'),
+            'star_finish': new Audio('./static/assets/star_finish.mp3')
         };
+
+        this.sounds = audioFiles;
 
         this.sounds.background.loop = true;
         this.sounds.background.volume = 0.3;

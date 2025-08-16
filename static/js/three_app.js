@@ -83,6 +83,13 @@ function init() {
 function createEye() {
   eyeGroup = new THREE.Group();
   
+  // GLTFLoader가 로드되었는지 확인
+  if (typeof THREE.GLTFLoader === 'undefined') {
+    console.warn('[ThreeApp] GLTFLoader not loaded, creating simple sphere eye');
+    createSimpleEye();
+    return;
+  }
+  
   // GLTFLoader를 사용해서 eye.glb 모델 로드
   const loader = new THREE.GLTFLoader();
   
@@ -90,7 +97,7 @@ function createEye() {
   const textureLoader = new THREE.TextureLoader();
   
   // 텍스처 로딩 개선을 위한 설정
-  loader.setPath('/static/assets/models/');
+  loader.setPath('./static/assets/models/');
   
   loader.load('eye.glb', (gltf) => {
     const eyeModel = gltf.scene;
@@ -106,7 +113,7 @@ function createEye() {
         if (meshCount === 0) {
           // 첫 번째 메시 (Sphere001) - 홍채/동공에 eyeball.png 텍스처 적용
           const eyeballTexture = textureLoader.load(
-            '/static/assets/eyeball.png',
+            './static/assets/eyeball.png',
             // 텍스처 로드 성공
             (texture) => {
               console.log('Eyeball texture loaded successfully!');
@@ -241,157 +248,88 @@ function createEye() {
                   }
                 }
               };
+              
+              console.log('🎯 Eyeball texture adjustment functions ready!');
+              
             },
-            // 로딩 진행상황
+            // 텍스처 로드 진행
             (progress) => {
-              console.log('Loading eyeball texture:', (progress.loaded / progress.total * 100) + '%');
+              console.log('Eyeball texture loading progress:', progress);
             },
-            // 에러 처리
+            // 텍스처 로드 실패
             (error) => {
-              console.warn('Failed to load eyeball texture, using fallback color:', error);
-              // 텍스처 로드 실패시 기본 색상 사용
+              console.error('Failed to load eyeball texture:', error);
+              // 텍스처 로드 실패 시 기본 색상 사용
               child.material.color.setHex(0x1E3A8A);
               child.material.needsUpdate = true;
             }
           );
-          
-          child.material = new THREE.MeshStandardMaterial({
-            color: 0xFFFFFF, // 텍스처와 함께 사용할 기본 색상
-            roughness: 0.2,
-            metalness: 0.1,
-            emissive: 0x0F172A,
-            emissiveIntensity: 0.1
-          });
-          
-          // 홍채 주변에 빛나는 효과 추가
-          const glowGeometry = child.geometry.clone();
-          const glowMaterial = new THREE.MeshBasicMaterial({
-            color: 0x3B82F6,
-            transparent: true,
-            opacity: 0.3,
-            side: THREE.BackSide
-          });
-          const glowMesh = new THREE.Mesh(glowGeometry, glowMaterial);
-          glowMesh.scale.multiplyScalar(1.1);
-          child.add(glowMesh);
-          
         } else if (meshCount === 1) {
-          // 두 번째 메시 (빈 이름) - 공막 (흰색)
-          child.material = new THREE.MeshStandardMaterial({
-            color: 0xF8FAFC,
-            roughness: 0.7,
-            metalness: 0.0,
-            transparent: true,
-            opacity: 0.98
-          });
-          
+          // 두 번째 메시 (Sphere002) - 흰색 눈동자
+          child.material.color.setHex(0xFFFFFF);
+          child.material.needsUpdate = true;
         } else if (meshCount === 2) {
-          // 세 번째 메시 (Sphere) - 각막 (투명)
-          child.material = new THREE.MeshPhysicalMaterial({
-            color: 0xFFFFFF,
-            transparent: true,
-            opacity: 0.2,
-            roughness: 0.05,
-            metalness: 0.0,
-            clearcoat: 1.0,
-            clearcoatRoughness: 0.05,
-            ior: 1.5,
-            transmission: 0.9
-          });
-          
-        } else if (meshCount === 3 || meshCount === 4) {
-          // BézierCurve 메시들 - 홍채 테두리 (금색)
-          child.material = new THREE.MeshBasicMaterial({
-            color: 0xFFD700,
-            transparent: true,
-            opacity: 0.8
-          });
-          
-        } else {
-          // 나머지 메시들 (Cube001 등) - 기본 갈색
-          child.material = new THREE.MeshStandardMaterial({
-            color: 0x8B4513,
-            roughness: 0.3,
-            metalness: 0.3,
-            emissive: 0x3D2817,
-            emissiveIntensity: 0.08
-          });
+          // 세 번째 메시 (Sphere003) - 검은색 동공
+          child.material.color.setHex(0x000000);
+          child.material.needsUpdate = true;
         }
-        
-        // 모든 메시에 공통 효과 적용
-        child.material.needsUpdate = true;
-        
-        // 재질이 제대로 적용되었는지 확인
-        console.log(`Applied material to mesh ${meshCount}:`, child.material);
-        console.log(`Mesh ${meshCount} color:`, child.material.color);
         
         meshCount++;
       }
     });
     
-    // 모델 크기 조정
-    eyeModel.scale.set(2, 2, 2);
+    // 모델 크기 및 위치 조정
+    eyeModel.scale.set(0.5, 0.5, 0.5);
+    eyeModel.position.set(0, 1.5, 0);
     
-    // 모델 위치 조정
-    eyeModel.position.set(0, 0, 0);
-    
-    // 모델을 eyeGroup에 추가
+    // 그룹에 추가
     eyeGroup.add(eyeModel);
     
-    // eyeGroup을 씬에 추가
-    eyeGroup.position.set(0, 1.5, 0);
-    scene.add(eyeGroup);
+    console.log('[ThreeApp] Eye model loaded successfully');
     
-    // 텍스처 로딩 완료 후 모델 표시
-    console.log('Eye model added to scene with texture support');
-    
-    // 전체 씬 강제 업데이트
-    scene.traverse((object) => {
-      if (object.isMesh && object.material) {
-        object.material.needsUpdate = true;
-        if (object.material.color) {
-          console.log(`Final material update for:`, object.name, object.material.color);
-        }
-      }
-    });
-    
-    console.log('Eye 3D model loaded successfully!');
-    console.log('Model structure:', gltf);
   }, 
-  // 로딩 진행상황
+  // 로딩 진행
   (progress) => {
-    console.log('Loading eye model:', (progress.loaded / progress.total * 100) + '%');
+    console.log('Eye model loading progress:', progress);
   },
-  // 에러 처리
+  // 로딩 실패
   (error) => {
-    console.error('Error loading eye model:', error);
-    // 에러 발생시 기본 구체로 폴백
-    createFallbackEye();
+    console.error('[ThreeApp] Failed to load eye model:', error);
+    // 모델 로드 실패 시 간단한 구체로 대체
+    createSimpleEye();
   });
+  
+  scene.add(eyeGroup);
 }
 
 /**
- * 3D 모델 로드 실패시 기본 눈 생성 (폴백)
+ * GLTFLoader가 없을 때 사용할 간단한 눈 생성
  */
-function createFallbackEye() {
-  const geometry = new THREE.SphereGeometry(1.5, 64, 64);
-  const material = new THREE.MeshPhongMaterial({
-    color: 0xffffff,
-    shininess: 100,
-    specular: 0xaaaaaa,
-    transparent: true,
-    opacity: 0.9
-  });
-  const eye = new THREE.Mesh(geometry, material);
-
-  const irisGeometry = new THREE.SphereGeometry(0.5, 32, 32);
-  const irisMaterial = new THREE.MeshBasicMaterial({ color: 0x000000 });
-  const iris = new THREE.Mesh(irisGeometry, irisMaterial);
-  iris.position.z = 1.4;
+function createSimpleEye() {
+  console.log('[ThreeApp] Creating simple sphere eye as fallback');
   
-  eye.add(iris);
-  eyeGroup.add(eye);
-  eyeGroup.position.set(0, 1.5, 0);
+  // 홍채 (파란색 구체)
+  const irisGeometry = new THREE.SphereGeometry(0.8, 32, 32);
+  const irisMaterial = new THREE.MeshLambertMaterial({ color: 0x1E3A8A });
+  const iris = new THREE.Mesh(irisGeometry, irisMaterial);
+  iris.position.set(0, 1.5, 0);
+  
+  // 동공 (검은색 구체)
+  const pupilGeometry = new THREE.SphereGeometry(0.3, 32, 32);
+  const pupilMaterial = new THREE.MeshLambertMaterial({ color: 0x000000 });
+  const pupil = new THREE.Mesh(pupilGeometry, pupilMaterial);
+  pupil.position.set(0, 1.5, 0.5);
+  
+  // 흰자 (흰색 구체)
+  const scleraGeometry = new THREE.SphereGeometry(1.0, 32, 32);
+  const scleraMaterial = new THREE.MeshLambertMaterial({ color: 0xFFFFFF });
+  const sclera = new THREE.Mesh(scleraGeometry, scleraMaterial);
+  sclera.position.set(0, 1.5, -0.2);
+  
+  eyeGroup.add(iris);
+  eyeGroup.add(pupil);
+  eyeGroup.add(sclera);
+  
   scene.add(eyeGroup);
 }
 
@@ -400,7 +338,7 @@ function createFallbackEye() {
  */
 function createSun() {
   const textureLoader = new THREE.TextureLoader();
-  textureLoader.load('/static/assets/sun.png', (texture) => {
+  textureLoader.load('./static/assets/sun.png', (texture) => {
       const geometry = new THREE.PlaneGeometry(20, 20);
       const material = new THREE.MeshPhongMaterial({
           map: texture,

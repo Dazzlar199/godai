@@ -32,23 +32,23 @@
       script.onload = () => {
         console.log('GLTFLoader 로드 완료');
         
-        // GLTFLoader가 로드되면 logo5 렌더러 초기화
+        // GLTFLoader가 로드되면 three_app.js 초기화
         setTimeout(() => {
-          if (window.logo5Renderer) {
-            console.log('[HTML] logo5 렌더러 초기화 시작');
-            window.logo5Renderer.init();
+          if (window.initThreeApp) {
+            console.log('[HTML] Three.js 앱 초기화 시작');
+            window.initThreeApp();
           } else {
-            console.log('[HTML] logo5 렌더러를 찾을 수 없음, 수동으로 초기화');
-            // 수동으로 렌더러 생성 및 초기화
-            if (typeof Logo5Renderer !== 'undefined') {
-              window.logo5Renderer = new Logo5Renderer();
-              window.logo5Renderer.init();
-            }
+            console.log('[HTML] Three.js 앱 함수를 찾을 수 없음');
           }
-        }, 500); // 0.5초 대기
+        }, 100); // 0.1초 대기
       };
       script.onerror = () => {
         console.error('GLTFLoader 로드 실패');
+        // GLTFLoader 로드 실패 시에도 Three.js 앱 초기화
+        if (window.initThreeApp) {
+          console.log('[HTML] GLTFLoader 로드 실패, Three.js 앱 초기화');
+          window.initThreeApp();
+        }
       };
       document.head.appendChild(script);
     });

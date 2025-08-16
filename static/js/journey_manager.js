@@ -212,7 +212,7 @@ export class JourneyManager {
 
   showPrologue() {
     console.log('[Prologue] 버튼 기반 프롤로그 시작');
-    const continueBtn = document.getElementById('prologue-continue-btn');
+    const continueBtn = document.getElementById('continue-btn');
     
     // Audio context 강제 활성화 (사용자가 인트로에서 상호작용했으므로)
     this.audioManager.resumeAudioContext();
