@@ -18,7 +18,7 @@ export class JourneyManager {
     this.dialogueTurnCount = 0;
     this.dilemmaOrder = ['D', 'F', 'H']; // 딜레마 키들
     this.audioManager = new AudioManager();
-    this.audioManager.playSound('background');
+    // 배경음악은 사용자 상호작용 후에 재생됨
     this.initializePhases();
     this.startPerformanceMonitoring();
     this.setupGlobalListeners();
@@ -214,9 +214,8 @@ export class JourneyManager {
     console.log('[Prologue] 버튼 기반 프롤로그 시작');
     const continueBtn = document.getElementById('continue-btn');
     
-    // Audio context 강제 활성화 (사용자가 인트로에서 상호작용했으므로)
-    this.audioManager.resumeAudioContext();
-    this.audioManager.playSound('phase1_voice');
+    // 배경음악만 먼저 재생 (사용자 상호작용 후)
+    this.audioManager.playSound('background');
 
     if (!continueBtn) {
       console.error('[Prologue] 계속하기 버튼을 찾을 수 없습니다.');
@@ -227,6 +226,10 @@ export class JourneyManager {
     
     const onContinue = () => {
       this.audioManager.playSound('click');
+      // 사용자가 클릭한 후에 음성 재생
+      setTimeout(() => {
+        this.audioManager.playSound('phase1_voice');
+      }, 100);
       console.log('[Prologue] 계속하기 버튼 클릭됨. 2단계로 전환합니다.');
       this.transitionToPhase(2);
       continueBtn.removeEventListener('click', onContinue);

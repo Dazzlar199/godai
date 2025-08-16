@@ -9,7 +9,7 @@ let journeyManager;
 function initializeApp() {
     console.log('[Init] App initialization started.');
 
-    // Three.js 앱 함수를 전역으로 노출
+    // Three.js 앱 함수를 전역으로 노출 (HTML에서 호출할 예정)
     window.initThreeApp = initThreeApp;
     window.startWarpEffect = startWarpEffect;
 
