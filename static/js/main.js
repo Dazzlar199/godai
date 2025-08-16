@@ -1,5 +1,4 @@
 import { JourneyManager } from './journey_manager.js';
-import { initThreeApp, startWarpEffect } from './three_app.js';
 
 let journeyManager;
 
@@ -9,9 +8,9 @@ let journeyManager;
 function initializeApp() {
     console.log('[Init] App initialization started.');
 
-    // Three.js 앱 함수를 전역으로 노출 (HTML에서 호출할 예정)
-    window.initThreeApp = initThreeApp;
-    window.startWarpEffect = startWarpEffect;
+    // Three.js 앱 함수는 HTML에서 GLTFLoader 로드 후 전역으로 노출됨
+    // window.initThreeApp = initThreeApp;
+    // window.startWarpEffect = startWarpEffect;
 
     // 여정 관리자 시작
     journeyManager = new JourneyManager();

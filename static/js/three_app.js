@@ -524,3 +524,7 @@ export function startWarpEffect(duration) {
     warpStartTime = Date.now();
     warpDuration = duration;
 }
+
+// 전역으로 함수 노출
+window.initThreeApp = initThreeApp;
+window.startWarpEffect = startWarpEffect;
