@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>신의 눈 - GOD DOES NOT BLINK</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;700&family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="/static/css/style.min.css">
+  
+  <!-- Three.js and GLTFLoader -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  
+  <script>
+    // Three.js가 로드된 후 GLTFLoader를 로드
+    window.addEventListener('load', () => {
+      if (typeof THREE === 'undefined') {
+        console.error('Three.js가 로드되지 않았습니다.');
+        return;
+      }
+      
+      console.log('Three.js 로드 완료:', THREE.REVISION);
+      
+      // Three.js가 로드된 후 GLTFLoader 로드
+      const script = document.createElement('script');
+      script.src = '/static/js/GLTFLoader.js';
+      script.onload = () => {
+        console.log('GLTFLoader 로드 완료');
+        
+        // GLTFLoader가 로드되면 logo5 렌더러 초기화
+        setTimeout(() => {
+          if (window.logo5Renderer) {
+            console.log('[HTML] logo5 렌더러 초기화 시작');
+            window.logo5Renderer.init();
+          } else {
+            console.log('[HTML] logo5 렌더러를 찾을 수 없음, 수동으로 초기화');
+            // 수동으로 렌더러 생성 및 초기화
+            if (typeof Logo5Renderer !== 'undefined') {
+              window.logo5Renderer = new Logo5Renderer();
+              window.logo5Renderer.init();
+            }
+          }
+        }, 500); // 0.5초 대기
+      };
+      script.onerror = () => {
+        console.error('GLTFLoader 로드 실패');
+      };
+      document.head.appendChild(script);
+    });
+  </script>
+  
+  <style>
+    .drawing-controls {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 30px;
+        margin-top: 15px;
+    }
+    .control-group {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .control-group label {
+        font-size: 1rem;
+        color: #fff;
+    }
+    #color-palette {
+        display: flex;
+        gap: 8px;
+    }
+    .color-box {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        cursor: pointer;
+        border: 2px solid #fff;
+        transition: transform 0.2s;
+    }
+    .color-box:hover {
+        transform: scale(1.1);
+    }
+    #brush-size {
+        cursor: pointer;
+    }
+    .drawing-mission-container {
+        position: relative;
+        width: 800px;
+        height: 600px;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+    .drawing-mission-container canvas {
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
+    #guide-canvas {
+        background-color: white;
+        z-index: 1;
+    }
+    #drawing-canvas {
+        background-color: transparent;
+        z-index: 2;
+    }
+    .final-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+    }
+    .final-card-container {
+        margin: 20px 0;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        border: 3px solid var(--color-glow);
+    }
+    #final-card-image {
+        width: 300px; 
+        height: auto;
+        display: block;
+    }
+    .final-message {
+        margin-top: 20px;
+        font-size: 1.2rem;
+        color: var(--color-text-secondary);
+    }
+    #restart-btn {
+        margin-top: 30px;
+    }
+    
+    /* 별자리 관련 스타일 */
+    .constellation-info {
+        margin-top: 20px;
+        text-align: center;
+        padding: 15px;
+        background: rgba(0, 0, 0, 0.5);
+        border-radius: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    #constellation-name {
+        font-size: 1.4rem;
+        font-weight: bold;
+        color: #FFD700;
+        margin: 0 0 10px 0;
+        text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+    }
+    
+    #constellation-description {
+        font-size: 1rem;
+        color: #E0E0E0;
+        margin: 0;
+        line-height: 1.4;
+    }
+    
+    /* 가이드 캔버스 스타일 */
+    #guide-canvas {
+        background: linear-gradient(135deg, #000428 0%, #004e92 100%);
+        opacity: 0.7;
+    }
+    
+    /* 드로잉 캔버스 스타일 */
+    #drawing-canvas {
+        background: transparent;
+    }
+    
+    /* 최종 단계 별자리 스타일 */
+    .final-constellation-info {
+        margin: 20px 0;
+        padding: 20px;
+        background: rgba(0, 0, 0, 0.7);
+        border-radius: 15px;
+        border: 2px solid #FFD700;
+    }
+    
+    .final-constellation-name {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #FFD700;
+        margin: 0 0 15px 0;
+        text-shadow: 0 0 15px rgba(255, 215, 0, 0.7);
+        text-align: center;
+    }
+    
+    .final-constellation-meaning {
+        font-size: 1.2rem;
+        color: #E0E0E0;
+        margin: 0;
+        line-height: 1.6;
+        text-align: center;
+        font-style: italic;
+    }
+  </style>
+</head>
+<body>
+  <!-- Three.js background -->
+  <canvas id="three-canvas"></canvas>
+
+  <!-- Phase 0: 인트로 -->
+  <section id="intro-section" class="phase-section" tabindex="-1">
+    <div class="intro-content">
+      <h1 class="intro-title">GOD DOES NOT BLINK</h1>
+      <div class="loading-indicator">
+        <div class="loading-ring"></div>
+        <p>당신의 내면을 준비하는 중...</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Phase 1: 프롤로그 -->
+  <section id="prologue-section" class="phase-section" tabindex="-1">
+    <div class="prologue-content">
+        <h2 class="prologue-title">너의 결정에 만족하는가...</h2>
+        <p class="prologue-subtitle">네 내면의 진실을 마주할 준비가 되었는가?</p>
+        
+        <!-- Three.js 3D 모델 테스트 -->
+        <div class="three-model-container" style="position: absolute; top: 20px; left: 20px; width: 300px; height: 225px; border-radius: 15px; overflow: hidden; background: transparent; z-index: 10;">
+          <canvas id="logo5-canvas" width="300" height="225" style="width: 100%; height: 100%; display: block; background: transparent;"></canvas>
+          <div id="three-status" style="text-align: center; color: #00ffff; margin-top: 5px; font-size: 12px;">3D 모델</div>
+        </div>
+        
+
+        
+        <button id="prologue-continue-btn" class="prologue-btn btn">계속하기</button>
+    </div>
+  </section>
+
+  <!-- Phase 2: 카드 선택 -->
+  <section id="selection-section" class="phase-section" tabindex="-1">
+    <div class="selection-content">
+      <h2>당신의 운명 카드를 선택하세요</h2>
+      <div class="card-grid" id="card-grid"><!-- 카드 동적 생성 --></div>
+    </div>
+  </section>
+
+  <!-- Phase 3: 딜레마와 대화 -->
+  <section id="dialogue-section" class="phase-section" tabindex="-1">
+      <div id="dilemma-container" class="dilemma-container">
+          <h2 id="dilemma-title" class="dilemma-title"></h2>
+          <div class="dilemma-images">
+              <img id="dilemma-left-image" class="dilemma-image" src="" alt="딜레마 상황 1">
+              <img id="dilemma-right-image" class="dilemma-image" src="" alt="딜레마 상황 2">
+          </div>
+          <div id="mimir-lines" class="mimir-lines"></div>
+          <p id="dilemma-guide" class="dilemma-guide"></p>
+          <div id="dilemma-choices" class="dilemma-choices">
+              <!-- 선택지 버튼이 동적으로 추가됩니다 -->
+          </div>
+      </div>
+      <div id="chat-container" class="dialogue-container" style="display: none;">
+          <h2 class="dialogue-title">신과의 대화</h2>
+          <div id="chat-messages" class="chat-messages"></div>
+          <form id="chat-form" class="chat-form">
+              <input type="text" id="chat-input" placeholder="답변을 입력하세요..." autocomplete="off">
+              <button type="submit">전송</button>
+          </form>
+          <button id="next-dilemma-btn" class="btn">다음 질문으로</button>
+      </div>
+  </section>
+
+  <!-- Phase 4: 운명의 별자리 그리기 -->
+  <section id="mediapipe-section" class="phase-section" tabindex="-1">
+    <div class="mediapipe-main-content">
+      <div id="mediapipe-art-view" class="mediapipe-column">
+        <h3 class="mediapipe-subtitle">당신의 얼굴은 우주의 별빛이 됩니다.</h3>
+        <div class="mediapipe-container">
+           <video id="webcam" autoplay playsinline style="display: none;"></video>
+           <canvas id="mediapipe-canvas" width="800" height="600"></canvas>
+        </div>
+      </div>
+      <div id="mediapipe-drawing-view" class="mediapipe-column">
+        <h3 class="mediapipe-subtitle">손동작으로 당신만의 운명의 별자리를 그려보세요.</h3>
+        <div class="drawing-mission-container">
+            <canvas id="guide-canvas" width="800" height="600"></canvas>
+            <canvas id="drawing-canvas" width="800" height="600"></canvas>
+        </div>
+        <div id="constellation-info" class="constellation-info">
+            <p id="constellation-name"></p>
+            <p id="constellation-description"></p>
+        </div>
+      </div>
+    </div>
+    <div class="constellation-guide">
+        <h3 class="guide-title">📖 별자리 그리기 가이드</h3>
+        <div class="guide-steps">
+            <div class="guide-step active" id="step-1">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <h4>웹캠 활성화</h4>
+                    <p>"별자리 그리기 시작" 버튼을 클릭하여 웹캠을 활성화하세요.</p>
+                </div>
+            </div>
+            <div class="guide-step" id="step-2">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <h4>별 그리기</h4>
+                    <p>손가락을 웹캠 앞에 대고 별 모양을 그리세요. 6개의 별이 모두 그려질 때까지 계속하세요.</p>
+                </div>
+            </div>
+            <div class="guide-step" id="step-3">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <h4>별 연결하기</h4>
+                    <p>별들이 모두 그려지면, 손가락으로 별과 별을 잇는 선을 그려보세요.</p>
+                </div>
+            </div>
+            <div class="guide-step" id="step-4">
+                <div class="step-number">4</div>
+                <div class="step-content">
+                    <h4>완성!</h4>
+                    <p>모든 별과 연결선이 그려지면 당신만의 운명의 별자리가 완성됩니다!</p>
+                </div>
+            </div>
+        </div>
+        <div class="guide-tips">
+            <h4>💡 팁</h4>
+            <ul>
+                <li>손가락을 명확하게 보이도록 밝은 곳에서 진행하세요</li>
+                <li>손가락을 천천히 움직여 정확한 선을 그리세요</li>
+                <li>별자리가 완성되면 자동으로 다음 단계로 넘어갑니다</li>
+            </ul>
+        </div>
+    </div>
+    <div class="mediapipe-controls">
+        <button id="start-analysis-btn" class="btn">별자리 그리기 시작</button>
+        <button id="clear-drawing-btn" class="btn">다시 그리기</button>
+        <p id="analysis-status" class="mediapipe-status">버튼을 눌러 별자리 그리기를 시작하세요.</p>
+    </div>
+    <p class="mediapipe-description">
+        웹캠을 통해 당신의 얼굴은 우주의 별빛이 되고, 손동작은 별과 별을 잇는 운명의 선이 됩니다. <br/>
+        당신의 선택이 만든 고유한 별자리를 완성해보세요.
+    </p>
+  </section>
+
+  <!-- Phase 4: 최종 단계 -->
+  <section id="final-section" class="phase-section" tabindex="-1">
+    <div class="final-content">
+        <h2 class="final-title">당신만의 운명의 별자리가 완성되었습니다</h2>
+        <div class="final-constellation-info">
+            <h3 id="final-constellation-name" class="final-constellation-name"></h3>
+            <p id="final-constellation-meaning" class="final-constellation-meaning"></p>
+        </div>
+        <div class="final-card-container">
+            <img id="final-card-image" src="" alt="Selected Card" />
+        </div>
+        <p id="final-message" class="final-message">'타로타로스'팀은 당신의 여정을 영원히 기억할 것입니다.</p>
+        <button id="restart-btn" class="btn">다시 시작하기</button>
+    </div>
+  </section>
+
+  <!-- Transition Overlay -->
+  <div id="transition-overlay" class="transition-overlay">
+      <p id="transition-text"></p>
+  </div>
+
+  <!-- Constellation Birth Animation Overlay -->
+  <div id="birth-overlay" class="birth-overlay">
+      <div class="birth-content">
+          <div id="birth-message" class="birth-message"></div>
+      </div>
+  </div>
+
+  <!-- Card Detail Modal -->
+  <div id="card-detail-modal" class="card-detail-modal">
+      <div class="card-detail-content">
+          <div class="card-detail-header">
+              <h2 id="modal-card-name" class="modal-card-name"></h2>
+              <span id="modal-card-keyword" class="modal-card-keyword"></span>
+              <button class="modal-close-btn" onclick="closeCardDetailModal()">&times;</button>
+          </div>
+          <div class="card-detail-body">
+              <div class="card-detail-section">
+                  <h3>성격 및 행동 패턴</h3>
+                  <p id="modal-card-personality"></p>
+              </div>
+              <div class="card-detail-section">
+                  <h3>강점</h3>
+                  <p id="modal-card-strengths"></p>
+              </div>
+              <div class="card-detail-section">
+                  <h3>약점</h3>
+                  <p id="modal-card-weaknesses"></p>
+              </div>
+          </div>
+          <div class="card-detail-footer">
+              <button id="modal-select-card" class="btn select-card-btn">이 카드 선택하기</button>
+          </div>
+      </div>
+  </div>
+
+  <!-- 라이브러리 및 앱 시작 -->
+  <script>
+    /**
+     * 스크립트 파일을 비동기적으로 로드하는 함수
+     * @param {string} src - 스크립트 파일 경로
+     * @returns {Promise<void>}
+     */
+    function loadScript(src) {
+      return new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = src;
+        script.onload = resolve;
+        script.onerror = reject;
+        document.head.appendChild(script);
+      });
+    }
+
+    /**
+     * 애플리케이션 부트스트랩: 모든 필수 스크립트를 순서대로 로드하고 앱을 시작합니다.
+     */
+    async function bootstrap() {
+      try {
+        console.log('[HTML] 필수 라이브러리 로딩 시작...');
+        
+        // 1. 전역 변수를 설정하는 라이브러리/스크립트를 로드합니다.
+        // Three.js (window.THREE) 와 API 키 (window.OPENAI_API_KEY 등)
+        await Promise.all([
+          loadScript('https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js'),
+          loadScript('/static/js/api_keys.js')
+        ]);
+        console.log('[HTML] 필수 라이브러리 로딩 완료.');
+
+        // 2. 앱의 메인 모듈을 동적으로 import합니다.
+        // main.js가 의존하는 다른 모듈들(mediapipe 등)은 JS의 import 시스템이 자동으로 처리합니다.
+        await import('/static/js/main.js');
+        console.log('[HTML] 애플리케이션 모듈 로딩 완료. 앱이 시작됩니다.');
+        
+        // Logo5 3D 모델 렌더러 로드
+        await loadScript('/static/js/logo5_renderer.js');
+        console.log('[HTML] Logo5 렌더러 로딩 완료.');
+        
+
+
+      } catch (error) {
+        console.error('[HTML] 애플리케이션 부트스트랩 실패:', error);
+        // 사용자에게 로딩 실패를 알립니다.
+        document.body.innerHTML = '<div style="position:fixed;top:0;left:0;width:100%;height:100%;background:black;color:white;display:flex;align-items:center;justify-content:center;"><h2>애플리케이션 로딩에 실패했습니다.</h2></div>';
+      }
+    }
+
+    bootstrap();
+  </script>
+
+</body>
+</html>

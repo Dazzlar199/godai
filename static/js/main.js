@@ -1,0 +1,26 @@
+import { JourneyManager } from './journey_manager.js';
+import { initThreeApp, startWarpEffect } from './three_app.js';
+
+let journeyManager;
+
+/**
+ * 앱을 초기화하고 전역 상태를 설정합니다.
+ */
+function initializeApp() {
+    console.log('[Init] App initialization started.');
+
+    // Three.js 초기화
+    initThreeApp();
+
+    // 여정 관리자 시작
+    journeyManager = new JourneyManager();
+
+    // 다른 모듈에서 접근할 수 있도록 전역 스코프에 할당
+    window.journeyManager = journeyManager;
+    window.startWarpEffect = startWarpEffect;
+
+    console.log('[Init] App initialized successfully.');
+}
+
+// Start the app
+initializeApp();
